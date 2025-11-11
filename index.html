@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testing Boilerplate SDK</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <h1>IP Address from event</h1>
+    <p>IP: <span id="ip-address"></span></p>
+    <p>Loading: <span id="loading-status"></span></p>
+    <p>Error: <span id="error-message"></span></p>
+
+    <h1>Gyroscope</h1>
+    <p>Permission: <span id="gyro-permission">unknown</span></p>
+    <p>alpha (z): <span id="gyro-alpha">-</span></p>
+    <p>beta (x): <span id="gyro-beta">-</span></p>
+    <p>gamma (y): <span id="gyro-gamma">-</span></p>
+    <button id="request-gyro">Request Gyro Permission</button>
+
+    <script src="../dist/boilerplate-sdk.umd.js"></script>
+    <script src="./main.js"></script>
+    <script>
+      window.addEventListener('ipStateChange', (event) => {
+        const { loading, ip, error } = event.detail;
+        console.log('State changed in the SDK:', { loading, ip, error });
+
+        document.getElementById('ip-address').textContent = ip || 'N/A';
+        document.getElementById('loading-status').textContent = loading ? 'Loading...' : 'Finished';
+        document.getElementById('error-message').textContent = error ? error.message : 'No error';
+      });
+
+      // Request permission on user gesture (needed for iOS Safari)
+      document.getElementById('request-gyro').addEventListener('click', () => {
+        window.dispatchEvent(new Event('requestGyroPermission'));
+      });
+
+      // Listen for permission state changes
+      window.addEventListener('gyroPermissionState', (event) => {
+        const { state } = event.detail;
+        document.getElementById('gyro-permission').textContent = state;
+      });
+
+      // Listen for orientation updates
+      window.addEventListener('gyroStateChange', (event) => {
+        const { alpha, beta, gamma } = event.detail;
+        document.getElementById('gyro-alpha').textContent = alpha ?? '-';
+        document.getElementById('gyro-beta').textContent = beta ?? '-';
+        document.getElementById('gyro-gamma').textContent = gamma ?? '-';
+      });
+    </script>
+  </body>
+</html>

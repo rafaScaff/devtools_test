@@ -1,0 +1,1 @@
+window.TestSDK.init('root');
